@@ -2,16 +2,16 @@
 	"schemaVersion": 1,
 	"id": "horsebreedinghelper",
 	"version": "${version}",
-	"name": "horsebreedinghelper",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Horse Breeding Helper",
+	"description": "A Minecraft Fabric mod that helps you identify the best horses for breeding by displaying their scores and diamond values when mounting them, with RPG-style rarity classification.",
 	"authors": [
-		"Me!"
+		"Hoormazd1379"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/Hoormazd1379/Horse-Breeding-Helper-Fabric",
+		"sources": "https://github.com/Hoormazd1379/Horse-Breeding-Helper-Fabric"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/horsebreedinghelper/icon.png",
 	"environment": "client",
 	"entrypoints": {

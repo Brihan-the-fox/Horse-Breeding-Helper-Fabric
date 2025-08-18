@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.thecubecollective.horsebreedinghelper.event.HorseMountHandler;
 import net.thecubecollective.horsebreedinghelper.render.HorseHighlightRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -24,6 +25,9 @@ public class HorseBreedingHelperClient implements ClientModInitializer {
         
         // Initialize renderer
         HorseHighlightRenderer.initialize();
+        
+        // Register horse mount handler for score display
+        HorseMountHandler.register();
         
         // Register keybinding for F6
         toggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
