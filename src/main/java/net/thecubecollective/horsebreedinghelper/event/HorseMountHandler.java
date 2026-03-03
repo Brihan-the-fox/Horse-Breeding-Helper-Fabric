@@ -87,30 +87,34 @@ public class HorseMountHandler {
     }
 
     private static String getTierName(double totalScore) {
-        if (totalScore >= 80) {
+        if (totalScore >= 90) {
             return "Legendary";
+        } else if (totalScore >= 80) {
+            return "Epic";
         } else if (totalScore >= 70) {
             return "Rare";
         } else if (totalScore >= 60) {
-            return "Uncommon";
+            return "Good";
         } else if (totalScore >= 50) {
             return "Common";
         } else {
             return "Poor";
         }
     }
-    private static Formatting getTierColor(double totalScore) {
-        if (totalScore >= 80) {
-            return Formatting.LIGHT_PURPLE; // Magenta/Purple for Legendary
 
+    public static Formatting getTierColor(double totalScore) {
+        if (totalScore >= 90) {
+            return Formatting.GOLD; // Legendary
+        } else if (totalScore >= 80) {
+            return Formatting.LIGHT_PURPLE; // Epic
         } else if (totalScore >= 70) {
-            return Formatting.AQUA; // Light Blue for Rare
+            return Formatting.BLUE; // Rare
         } else if (totalScore >= 60) {
-            return Formatting.YELLOW; // Yellow for Uncommon
+            return Formatting.GREEN; // Good
         } else if (totalScore >= 50) {
-            return Formatting.GREEN; // Green for Common
+            return Formatting.GRAY; // Common
         } else {
-            return Formatting.RED; // Red for Poor
+            return Formatting.DARK_GRAY; // Poor
         }
     }
 

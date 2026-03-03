@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.thecubecollective.horsebreedinghelper.util.HorseScoreCalculator;
+import net.thecubecollective.horsebreedinghelper.event.HorseMountHandler;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -210,10 +211,6 @@ public class HorseHighlightRenderer {
 
     // Helper method to get color for breeding score - RPG style rarity classification
     public static int getScoreColor(double score) {
-        if (score >= 80) return 0xFFFF00FF; // Magenta for Legendary horses (80-100)
-        if (score >= 70) return 0xFF87CEEB; // Light Blue for Rare horses (70-79)
-        if (score >= 60) return 0xFFFFFF00; // Yellow for Uncommon horses (60-69)
-        if (score >= 50) return 0xFF00FF00; // Green for Common horses (50-59)
-        return 0xFFFF0000; // Red for Poor horses (<50)
+        return HorseMountHandler.getTierColor(score).getColorValue();
     }
 }
