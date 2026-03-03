@@ -3,6 +3,7 @@ package net.thecubecollective.horsebreedinghelper.render;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
@@ -116,7 +117,7 @@ public class HorseHighlightRenderer {
 
         try {
             // Try using VertexRendering.drawFilledBox first
-            VertexConsumer buffer = context.consumers().getBuffer(RenderLayer.getDebugFilledBox());
+            VertexConsumer buffer = context.consumers().getBuffer(TexturedRenderLayers.getEntitySolid());
             VertexRendering.drawFilledBox(
                 matrices,
                 buffer,
@@ -160,7 +161,7 @@ public class HorseHighlightRenderer {
             float alpha = 0.2f + pulse * 0.3f; // Pulsing alpha between 0.2 and 0.5
 
             // Draw a slightly transparent white box
-            VertexConsumer buffer = context.consumers().getBuffer(RenderLayer.getDebugFilledBox());
+            VertexConsumer buffer = context.consumers().getBuffer(TexturedRenderLayers.getEntitySolid());
             VertexRendering.drawFilledBox(matrices, buffer,
                 0, 0, 0,
                 (float)width, (float)height, (float)depth,
