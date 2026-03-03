@@ -91,6 +91,23 @@ public class HorseHighlightRenderer {
         HIGHLIGHTED_HORSES.entrySet().removeIf(entry -> !currentHorses.contains(entry.getKey()));
     }
 
+    private static void drawFilledBox(MatrixStack matrices, VertexConsumer buffer,
+                                    float x, float y, float z,
+                                    float width, float height, float depth,
+                                    float red, float green, float blue, float alpha) {
+        // Draw the 8 corners of the box
+        float x2 = x + width;
+        float y2 = y + height;
+        float z2 = z + depth;
+
+        // Example: Draw only the bottom face (for demo, expand for full box as needed)
+        buffer.vertex(matrices.peek().getPositionMatrix(), x, y, z).color(red, green, blue, alpha);
+        buffer.vertex(matrices.peek().getPositionMatrix(), x2, y, z).color(red, green, blue, alpha);
+        buffer.vertex(matrices.peek().getPositionMatrix(), x2, y, z2).color(red, green, blue, alpha);
+        buffer.vertex(matrices.peek().getPositionMatrix(), x, y, z2).color(red, green, blue, alpha);
+        // You can add more vertices for all faces if you want a full box.
+    }
+
     private static void drawHorseOutlineBox(MatrixStack matrices, HorseEntity horse, int color, Vec3d cameraPos, net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext context) {
         matrices.push();
 
@@ -118,7 +135,7 @@ public class HorseHighlightRenderer {
         try {
             // Try using VertexRendering.drawFilledBox first
             VertexConsumer buffer = context.consumers().getBuffer(TexturedRenderLayers.getEntitySolid());
-            VertexRendering.drawFilledBox(
+            drawFilledBox(
                 matrices,
                 buffer,
                 0.0f, 0.0f, 0.0f,
@@ -162,7 +179,7 @@ public class HorseHighlightRenderer {
 
             // Draw a slightly transparent white box
             VertexConsumer buffer = context.consumers().getBuffer(TexturedRenderLayers.getEntitySolid());
-            VertexRendering.drawFilledBox(matrices, buffer,
+            drawFilledBox(matrices, buffer,
                 0, 0, 0,
                 (float)width, (float)height, (float)depth,
                 1.0f, 1.0f, 1.0f, alpha); // White with pulsing alpha
