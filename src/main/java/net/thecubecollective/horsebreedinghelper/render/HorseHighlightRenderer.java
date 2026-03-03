@@ -35,7 +35,7 @@ public class HorseHighlightRenderer {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.world == null || client.player == null) return;
 
-            MatrixStack matrices = context.matrixStack();
+            MatrixStack matrices = context.matrices();
             if (matrices == null) return;
 
             renderHorseHighlights(matrices, context);
