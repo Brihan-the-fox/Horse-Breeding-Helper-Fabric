@@ -6,6 +6,9 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexRendering;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.client.render.state.OutlineRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseEntity;
@@ -91,57 +94,54 @@ public class HorseHighlightRenderer {
         HIGHLIGHTED_HORSES.entrySet().removeIf(entry -> !currentHorses.contains(entry.getKey()));
     }
 
-    private static void drawFilledBox(MatrixStack matrices, VertexConsumer buffer,
-                                    float x, float y, float z,
-                                    float width, float height, float depth,
-                                    float red, float green, float blue, float alpha) {
-        // Draw the 8 corners of the box
-        float x2 = x + width;
-        float y2 = y + height;
-        float z2 = z + depth;
+    private static void drawManualBoxQuads(MatrixStack matrices, VertexConsumer buffer, net.minecraft.util.math.Box box, float r, float g, float b, float a) {
+        float minX = (float)box.minX; float minY = (float)box.minY; float minZ = (float)box.minZ;
+        float maxX = (float)box.maxX; float maxY = (float)box.maxY; float maxZ = (float)box.maxZ;
 
-        // Example: Draw only the bottom face (for demo, expand for full box as needed)
-        buffer.vertex(matrices.peek().getPositionMatrix(), x, y, z).color(red, green, blue, alpha);
-        buffer.vertex(matrices.peek().getPositionMatrix(), x2, y, z).color(red, green, blue, alpha);
-        buffer.vertex(matrices.peek().getPositionMatrix(), x2, y, z2).color(red, green, blue, alpha);
-        buffer.vertex(matrices.peek().getPositionMatrix(), x, y, z2).color(red, green, blue, alpha);
-        // You can add more vertices for all faces if you want a full box.
+        org.joml.Matrix4f m = matrices.peek().getPositionMatrix();
+        int overlay = 655360;  // Default Overlay
+        int light = 15728880;  // Max Light
+
+        // 6 Faces (Quads), each requiring 4 vertices
+        float[][] vertices = {
+            // Bottom face (y = minY)
+            {minX, minY, minZ}, {maxX, minY, minZ}, {maxX, minY, maxZ}, {minX, minY, maxZ},
+            // Top face (y = maxY)
+            {minX, maxY, minZ}, {minX, maxY, maxZ}, {maxX, maxY, maxZ}, {maxX, maxY, minZ},
+            // North face (z = minZ)
+            {minX, minY, minZ}, {minX, maxY, minZ}, {maxX, maxY, minZ}, {maxX, minY, minZ},
+            // South face (z = maxZ)
+            {maxX, minY, maxZ}, {maxX, maxY, maxZ}, {minX, maxY, maxZ}, {minX, minY, maxZ},
+            // West face (x = minX)
+            {minX, minY, maxZ}, {minX, maxY, maxZ}, {minX, maxY, minZ}, {minX, minY, minZ},
+            // East face (x = maxX)
+            {maxX, minY, minZ}, {maxX, maxY, minZ}, {maxX, maxY, maxZ}, {maxX, minY, maxZ}
+        };
+
+        for (float[] v : vertices) {
+            // Fully compliant vertex format for standard entity layers
+            buffer.vertex(m, v[0], v[1], v[2])
+                  .color(r, g, b, a)
+                  .texture(0f, 0f)      // UV0
+                  .overlay(overlay)     // UV1
+                  .light(light)         // UV2
+                  .normal(0, 1, 0);     // Normal
+        }
     }
 
     private static void drawHorseOutlineBox(MatrixStack matrices, HorseEntity horse, int color, Vec3d cameraPos, net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext context) {
         matrices.push();
 
-        // Get horse position relative to camera
-        Vec3d horsePos = new Vec3d(horse.getX(), horse.getY(), horse.getZ());
-        double relX = horsePos.x - cameraPos.x;
-        double relY = horsePos.y - cameraPos.y;
-        double relZ = horsePos.z - cameraPos.z;
-
-        // Get horse bounding box
-        Box boundingBox = horse.getBoundingBox();
-        double width = boundingBox.maxX - boundingBox.minX;
-        double height = boundingBox.maxY - boundingBox.minY;
-        double depth = boundingBox.maxZ - boundingBox.minZ;
-
-        // Extract color components
-        float red = ((color >> 16) & 0xFF) / 255.0f;
-        float green = ((color >> 8) & 0xFF) / 255.0f;
-        float blue = (color & 0xFF) / 255.0f;
-        float alpha = 0.4f; // Semi-transparent
-
-        // Position the box
-        matrices.translate(relX - width/2, relY, relZ - depth/2);
-
         try {
-            // Try using VertexRendering.drawFilledBox first
-            VertexConsumer buffer = context.consumers().getBuffer(TexturedRenderLayers.getEntitySolid());
-            drawFilledBox(
-                matrices,
-                buffer,
-                0.0f, 0.0f, 0.0f,
-                (float)width, (float)height, (float)depth,
-                red, green, blue, alpha
-            );
+            float red = ((color >> 16) & 0xFF) / 255.0f;
+            float green = ((color >> 8) & 0xFF) / 255.0f;
+            float blue = (color & 0xFF) / 255.0f;
+
+            // Get box relative to camera
+            Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+            VertexConsumer buffer = context.consumers().getBuffer(net.minecraft.client.render.TexturedRenderLayers.getEntitySolid());
+
+            drawManualBoxQuads(matrices, buffer, box, red, green, blue, 0.4f);
 
         } catch (Exception e1) {
             // Fallback: Use basic glow
@@ -154,35 +154,13 @@ public class HorseHighlightRenderer {
     private static void drawTopHorseHighlight(MatrixStack matrices, HorseEntity horse, Vec3d cameraPos, net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext context) {
         matrices.push();
 
-        // Get horse position relative to camera
-        Vec3d horsePos = new Vec3d(horse.getX(), horse.getY(), horse.getZ());
-        double relX = horsePos.x - cameraPos.x;
-        double relY = horsePos.y - cameraPos.y;
-        double relZ = horsePos.z - cameraPos.z;
-
-        // Get horse bounding box and make it slightly larger
-        Box boundingBox = horse.getBoundingBox();
-        double width = (boundingBox.maxX - boundingBox.minX) * 1.15; // 15% larger for better visibility
-        double height = (boundingBox.maxY - boundingBox.minY) * 1.15;
-        double depth = (boundingBox.maxZ - boundingBox.minZ) * 1.15;
-
-        // White color for top horses with slight pulsing effect
-        long time = System.currentTimeMillis();
-        float pulse = (float)(0.5 + 0.3 * Math.sin(time * 0.005)); // Gentle pulsing
-
-        // Position the box (centered)
-        matrices.translate(relX - width/2, relY - (height - (boundingBox.maxY - boundingBox.minY))/2, relZ - depth/2);
-
         try {
-            // Use filled box rendering with pulsing white outline effect
-            float alpha = 0.2f + pulse * 0.3f; // Pulsing alpha between 0.2 and 0.5
+            long time = System.currentTimeMillis();
+        float pulse = (float)(0.4 + 0.3 * Math.sin(time * 0.005));
+            Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+            VertexConsumer buffer = context.consumers().getBuffer(net.minecraft.client.render.TexturedRenderLayers.getEntitySolid());
 
-            // Draw a slightly transparent white box
-            VertexConsumer buffer = context.consumers().getBuffer(TexturedRenderLayers.getEntitySolid());
-            drawFilledBox(matrices, buffer,
-                0, 0, 0,
-                (float)width, (float)height, (float)depth,
-                1.0f, 1.0f, 1.0f, alpha); // White with pulsing alpha
+            drawManualBoxQuads(matrices, buffer, box, 1.0f, 1.0f, 1.0f, pulse);
 
         } catch (Exception e) {
             // If rendering fails, fall back to simple glow effect
