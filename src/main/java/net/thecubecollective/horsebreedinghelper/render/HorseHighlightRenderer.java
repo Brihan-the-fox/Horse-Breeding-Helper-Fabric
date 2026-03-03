@@ -44,7 +44,7 @@ public class HorseHighlightRenderer {
 
     private static void renderHorseHighlights(MatrixStack matrices, net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
-        Vec3d playerPos = client.player.getPos();
+        Vec3d playerPos = new Vec3d(client.player.getX(), client.player.getY(), client.player.getZ());
         Vec3d cameraPos = context.camera().getPos();
         Set<HorseEntity> currentHorses = new HashSet<>();
 
