@@ -57,7 +57,7 @@ public class HorseHighlightRenderer {
 
         for (Entity entity : entities) {
             if (entity instanceof HorseEntity horse) {
-                double distance = playerPos.distanceTo(horse.getPos());
+                double distance = playerPos.distanceTo(new Vec3d(horse.getX(), horse.getY(), horse.getZ()));
                 if (distance <= HIGHLIGHT_RADIUS) {
                     currentHorses.add(horse);
 
@@ -94,7 +94,7 @@ public class HorseHighlightRenderer {
         matrices.push();
 
         // Get horse position relative to camera
-        Vec3d horsePos = horse.getPos();
+        Vec3d horsePos = new Vec3d(horse.getX(), horse.getY(), horse.getZ());
         double relX = horsePos.x - cameraPos.x;
         double relY = horsePos.y - cameraPos.y;
         double relZ = horsePos.z - cameraPos.z;
@@ -137,7 +137,7 @@ public class HorseHighlightRenderer {
         matrices.push();
 
         // Get horse position relative to camera
-        Vec3d horsePos = horse.getPos();
+        Vec3d horsePos = new Vec3d(horse.getX(), horse.getY(), horse.getZ());
         double relX = horsePos.x - cameraPos.x;
         double relY = horsePos.y - cameraPos.y;
         double relZ = horsePos.z - cameraPos.z;
