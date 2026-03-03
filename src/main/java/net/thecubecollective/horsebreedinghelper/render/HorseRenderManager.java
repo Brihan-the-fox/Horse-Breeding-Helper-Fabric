@@ -29,7 +29,7 @@ public class HorseRenderManager {
 
         for (Entity entity : entities) {
             if (entity instanceof HorseEntity horse) {
-                double distance = playerPos.distanceTo(horse.getPos());
+                double distance = playerPos.distanceTo(new Vec3d(horse.getX(), horse.getY(), horse.getZ()));
                 if (distance <= HIGHLIGHT_RADIUS) {
                     currentHorses.add(horse);
 
