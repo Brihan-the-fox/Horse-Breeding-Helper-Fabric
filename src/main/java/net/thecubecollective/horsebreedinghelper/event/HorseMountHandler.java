@@ -50,15 +50,33 @@ public class HorseMountHandler {
             Formatting color = getTierColor(score.totalScore);
             double diamondValue = calculateDiamondValue(score.totalScore);
 
+            // Calculate individual scores (0-100)
+            double sScore = score.speedScore * 100.0;
+            double jScore = score.jumpScore * 100.0;
+            double hScore = score.healthScore * 100.0;
+
             // Create formatted message with color and diamond value
             MutableText scoreText = Text.literal("Horse Score: ")
                     .append(Text.literal(String.format("%.1f", score.totalScore))
                             .formatted(color, Formatting.BOLD))
                     .append(Text.literal(" (")
                             .append(Text.literal(tierName).formatted(color))
-                            .append(") | Value: "));
+                            .append(")"));
+
+            // Add individual stats
+            scoreText.append(Text.literal(" |"));
+            scoreText.append(Text.literal(" Speed: "))
+                    .append(Text.literal(String.format("%.0f", sScore))
+                            .formatted(getTierColor(sScore)));
+            scoreText.append(Text.literal(" Jump: "))
+                    .append(Text.literal(String.format("%.0f", jScore))
+                            .formatted(getTierColor(jScore)));
+            scoreText.append(Text.literal(" Health: "))
+                    .append(Text.literal(String.format("%.0f", hScore))
+                            .formatted(getTierColor(hScore)));
 
             // Add diamond value
+            scoreText.append(Text.literal(" | Value: "));
             if (diamondValue > 0) {
                 scoreText.append(Text.literal(String.format("%.2f", diamondValue) + " 💎")
                         .formatted(Formatting.GOLD, Formatting.BOLD));
