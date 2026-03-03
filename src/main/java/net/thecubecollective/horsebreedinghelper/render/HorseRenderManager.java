@@ -20,7 +20,7 @@ public class HorseRenderManager {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.world == null || client.player == null) return;
 
-        Vec3d playerPos = client.player.getPos();
+        Vec3d playerPos = new Vec3d(client.player.getX(), client.player.getY(), client.player.getZ());
         Set<HorseEntity> currentHorses = new HashSet<>();
 
         // Find all horses within radius
