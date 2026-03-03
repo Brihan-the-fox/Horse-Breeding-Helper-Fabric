@@ -89,7 +89,8 @@ public class HorseHighlightRenderer {
         // Draw white highlight boxes around top 2 horses
         for (int i = 0; i < Math.min(2, horsesWithScores.size()); i++) {
             HorseEntity topHorse = horsesWithScores.get(i).getKey();
-            drawTopHorseHighlight(matrices, topHorse, cameraPos, context);
+            int color = HIGHLIGHTED_HORSES.getOrDefault(topHorse, 0xFFFFFF);
+            drawTopHorseHighlight(matrices, topHorse, color, cameraPos, context);
         }
 
         // Remove horses that are no longer in range
@@ -143,7 +144,7 @@ public class HorseHighlightRenderer {
             Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
             VertexConsumer buffer = context.consumers().getBuffer(RenderLayers.debugFilledBox());
 
-            drawManualBoxQuads(matrices, buffer, box, red, green, blue, 0.9f);
+            drawManualBoxQuads(matrices, buffer, box, red, green, blue, 0.8f);
 
         } catch (Exception e1) {
             // Fallback: Use basic glow
@@ -153,17 +154,25 @@ public class HorseHighlightRenderer {
         matrices.pop();
     }
 
-    private static void drawTopHorseHighlight(MatrixStack matrices, HorseEntity horse, Vec3d cameraPos, net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext context) {
+    private static void drawTopHorseHighlight(MatrixStack matrices, HorseEntity horse, int color, Vec3d cameraPos, net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext context) {
         matrices.push();
 
         try {
             long time = System.currentTimeMillis();
-        float pulse = (float)(0.4 + 0.3 * Math.sin(time * 0.005));
-            Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+            float pulse = (float)(0.3 + 0.3 * Math.sin(time * 0.005));
+            Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z).expand(0.5);
             VertexConsumer buffer = context.consumers().getBuffer(RenderLayers.debugFilledBox());
 
-            drawManualBoxQuads(matrices, buffer, box, 1.0f, 1.0f, 1.0f, pulse);
-
+            float red = ((color >> 16) & 0xFF) / 255.0f;
+            float green = ((color >> 8) & 0xFF) / 255.0f;
+            float blue = (color & 0xFF) / 255.0f;
+            // float r = 1.0f;
+            // float g = 0.85f;
+            // float b = 0.0f;
+            // float red = 1.0f;
+            // float green = 1.0f;
+            // float blue = 1.0f;
+            drawManualBoxQuads(matrices, buffer, box, red, green, blue, pulse);
         } catch (Exception e) {
             // If rendering fails, fall back to simple glow effect
             horse.setGlowing(true);
