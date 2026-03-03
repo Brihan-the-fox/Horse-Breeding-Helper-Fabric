@@ -3,6 +3,7 @@ package net.thecubecollective.horsebreedinghelper.render;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexRendering;
@@ -140,9 +141,9 @@ public class HorseHighlightRenderer {
 
             // Get box relative to camera
             Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-            VertexConsumer buffer = context.consumers().getBuffer(net.minecraft.client.render.TexturedRenderLayers.getEntitySolid());
+            VertexConsumer buffer = context.consumers().getBuffer(RenderLayers.debugFilledBox());
 
-            drawManualBoxQuads(matrices, buffer, box, red, green, blue, 0.4f);
+            drawManualBoxQuads(matrices, buffer, box, red, green, blue, 0.9f);
 
         } catch (Exception e1) {
             // Fallback: Use basic glow
@@ -159,7 +160,7 @@ public class HorseHighlightRenderer {
             long time = System.currentTimeMillis();
         float pulse = (float)(0.4 + 0.3 * Math.sin(time * 0.005));
             Box box = horse.getBoundingBox().offset(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-            VertexConsumer buffer = context.consumers().getBuffer(net.minecraft.client.render.TexturedRenderLayers.getEntitySolid());
+            VertexConsumer buffer = context.consumers().getBuffer(RenderLayers.debugFilledBox());
 
             drawManualBoxQuads(matrices, buffer, box, 1.0f, 1.0f, 1.0f, pulse);
 
