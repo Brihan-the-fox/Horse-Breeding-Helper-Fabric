@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import net.thecubecollective.horsebreedinghelper.event.HorseMountHandler;
 import net.thecubecollective.horsebreedinghelper.render.HorseHighlightRenderer;
 import org.lwjgl.glfw.GLFW;
@@ -30,8 +31,8 @@ public class HorseBreedingHelperClient implements ClientModInitializer {
         HorseMountHandler.register();
 
         // Create custom keybinding category
-        KeyMapping.Category CATEGORY = new KeyMapping.Category(
-            Identifier.fromNamespaceAndPath(MOD_ID, "category.horsebreedinghelper")
+        KeyBinding.Category CATEGORY = new KeyBinding.Category(
+            Identifier.of(MOD_ID, "category.horsebreedinghelper")
         );
 
         // Register keybinding for F6
