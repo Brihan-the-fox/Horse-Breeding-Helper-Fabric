@@ -29,12 +29,17 @@ public class HorseBreedingHelperClient implements ClientModInitializer {
         // Register horse mount handler for score display
         HorseMountHandler.register();
 
+        // Create custom keybinding category
+        KeyMapping.Category CATEGORY = new KeyMapping.Category(
+            Identifier.fromNamespaceAndPath(MOD_ID, "category.horsebreedinghelper")
+        );
+
         // Register keybinding for F6
         toggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.horsebreedinghelper.toggle",
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_F6,
-            "category.horsebreedinghelper"
+            CATEGORY
         ));
 
         // Register client tick event to handle key presses and horse highlighting
